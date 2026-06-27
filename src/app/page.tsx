@@ -1,63 +1,113 @@
-import Image from "next/image";
-
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bot, Plus, Settings, Users, Activity } from "lucide-react";
+import Link from "next/link";
+export default function Dashboard() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-border/50 bg-card/50 backdrop-blur-xl flex flex-col">
+        <div className="h-16 flex items-center px-6 border-b border-border/50">
+          <Bot className="w-6 h-6 text-primary mr-2" />
+          <span className="font-bold text-lg tracking-tight">AgentFlow BaaS</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <nav className="flex-1 p-4 space-y-2">
+          <Link href="/">
+            <Button variant="secondary" className="w-full justify-start">
+              <Activity className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+          </Link>
+          <Link href="/projects">
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+              <Users className="w-4 h-4 mr-2" />
+              Proyectos (Bots)
+            </Button>
+          </Link>
+          <Link href="/settings">
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+              <Settings className="w-4 h-4 mr-2" />
+              Configuración Global
+            </Button>
+          </Link>
+        </nav>
+        <div className="p-4 border-t border-border/50">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <span className="text-primary font-medium text-xs">AG</span>
+            </div>
+            <div>
+              <p className="text-sm font-medium leading-none">Agencia Demo</p>
+              <p className="text-xs text-muted-foreground mt-1">Plan Pro</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <header className="h-16 flex items-center justify-between px-8 border-b border-border/50 backdrop-blur-sm sticky top-0 z-10">
+          <h1 className="text-xl font-semibold">Resumen General</h1>
+          <Link href="/projects/new">
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Nuevo Agente
+            </Button>
+          </Link>
+        </header>
+
+        <div className="p-8 space-y-8">
+          {/* Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-card/40 border-border/50 shadow-sm backdrop-blur-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Agentes Activos</CardTitle>
+                <Bot className="w-4 h-4 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">12</div>
+                <p className="text-xs text-muted-foreground mt-1">+2 desde el mes pasado</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card/40 border-border/50 shadow-sm backdrop-blur-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Sesiones WAHA</CardTitle>
+                <Activity className="w-4 h-4 text-emerald-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">12 / 12</div>
+                <p className="text-xs text-emerald-500 mt-1">Todas conectadas</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card/40 border-border/50 shadow-sm backdrop-blur-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Intervenciones Humanas</CardTitle>
+                <Users className="w-4 h-4 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">4</div>
+                <p className="text-xs text-muted-foreground mt-1">Requieren atención ahora</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions / Empty State */}
+          <Card className="border-border/50 bg-gradient-to-br from-card/40 to-primary/5 shadow-md">
+            <CardHeader>
+              <CardTitle>Despliega un nuevo Agente IA</CardTitle>
+              <CardDescription>
+                Configura un nuevo bot de ventas o atención al cliente conectando n8n y WAHA en un clic.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/projects/new">
+                <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/20">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Iniciar Creador de Proyectos
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
