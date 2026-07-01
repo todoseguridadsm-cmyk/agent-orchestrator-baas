@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bot, Rocket, ArrowLeft, Package, Sparkles, Home, Utensils, ShoppingBag, Stethoscope, Briefcase, Wand2, Armchair, Hotel, Tent, Music, Scissors, Dumbbell, Wrench, Scale, Dog, Shield, Settings, Activity, Pill } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createProject, generateDynamicPrompt } from "../../actions";
@@ -35,6 +36,43 @@ const TEMPLATES = [
   { id: "custom", title: "Crear desde cero", icon: <Wand2 className="w-6 h-6 text-slate-500" />, description: "Usa Inteligencia Artificial para generar un prompt a medida.", prompt: "" }
 ];
 
+const TEMPLATE_CONFIGS: Record<string, any> = {
+  muebleria: { lang: "es", langs: ["es"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "amigable_cercano", "profesional_formal"] },
+  clinica: { lang: "es", langs: ["es"], pers: "profesional_formal", persList: ["profesional_formal"] },
+  hoteleria: { lang: "multilingue", langs: ["multilingue", "es", "en", "pt"], pers: "profesional_formal", persList: ["profesional_formal", "vendedor_proactivo"] },
+  cabanas: { lang: "multilingue", langs: ["multilingue", "es", "en", "pt"], pers: "amigable_cercano", persList: ["amigable_cercano", "vendedor_proactivo"] },
+  discoteca: { lang: "es", langs: ["es", "multilingue"], pers: "amigable_cercano", persList: ["amigable_cercano", "vendedor_proactivo"] },
+  restaurante: { lang: "es", langs: ["es", "multilingue"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "amigable_cercano"] },
+  ecommerce: { lang: "es", langs: ["es"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "amigable_cercano"] },
+  agencia: { lang: "es", langs: ["es", "multilingue", "en"], pers: "profesional_formal", persList: ["profesional_formal", "vendedor_proactivo"] },
+  peluqueria: { lang: "es", langs: ["es"], pers: "amigable_cercano", persList: ["amigable_cercano"] },
+  gimnasio: { lang: "es", langs: ["es"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "amigable_cercano"] },
+  taller: { lang: "es", langs: ["es"], pers: "soporte_resolucion", persList: ["soporte_resolucion", "profesional_formal"] },
+  abogados: { lang: "es", langs: ["es"], pers: "profesional_formal", persList: ["profesional_formal"] },
+  veterinaria: { lang: "es", langs: ["es"], pers: "amigable_cercano", persList: ["amigable_cercano", "profesional_formal"] },
+  seguros: { lang: "es", langs: ["es"], pers: "profesional_formal", persList: ["profesional_formal", "vendedor_proactivo", "soporte_resolucion"] },
+  estetica: { lang: "es", langs: ["es", "multilingue"], pers: "amigable_cercano", persList: ["amigable_cercano", "profesional_formal"] },
+  farmacia: { lang: "es", langs: ["es"], pers: "profesional_formal", persList: ["profesional_formal", "amigable_cercano"] },
+  servicio_tecnico: { lang: "es", langs: ["es"], pers: "soporte_resolucion", persList: ["soporte_resolucion", "profesional_formal"] },
+  repuestos: { lang: "es", langs: ["es"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "soporte_resolucion"] },
+  inmobiliaria: { lang: "es", langs: ["es", "multilingue"], pers: "profesional_formal", persList: ["profesional_formal", "vendedor_proactivo"] },
+  concesionaria: { lang: "es", langs: ["es"], pers: "vendedor_proactivo", persList: ["vendedor_proactivo", "profesional_formal"] }
+};
+
+const LANG_LABELS: Record<string, string> = {
+  es: "Español",
+  en: "Inglés",
+  pt: "Portugués",
+  multilingue: "Multilingüe (Automático)"
+};
+
+const PERS_LABELS: Record<string, string> = {
+  vendedor_proactivo: "Vendedor Proactivo (Persuasivo)",
+  amigable_cercano: "Amigable y Cercano (Cálido)",
+  profesional_formal: "Profesional y Formal (Serio)",
+  soporte_resolucion: "Soporte Técnico (Resolutivo)"
+};
+
 export default function NewProjectPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -57,12 +95,31 @@ export default function NewProjectPage() {
   const [businessHours, setBusinessHours] = useState("");
   const [visitDuration, setVisitDuration] = useState("");
 
+  const [language, setLanguage] = useState("es");
+  const [availableLangs, setAvailableLangs] = useState<string[]>(["es"]);
+  const [personality, setPersonality] = useState("profesional_formal");
+  const [availablePers, setAvailablePers] = useState<string[]>(["profesional_formal"]);
+
   const handleTemplateSelect = (templateId: string) => {
     const t = TEMPLATES.find(x => x.id === templateId);
     if (t) {
       setSelectedTemplate(t.id);
       setIndustry(t.title);
       setSystemPrompt(t.prompt);
+      
+      const conf = TEMPLATE_CONFIGS[t.id];
+      if (conf) {
+        setAvailableLangs(conf.langs);
+        setLanguage(conf.lang);
+        setAvailablePers(conf.persList);
+        setPersonality(conf.pers);
+      } else {
+        setAvailableLangs(["es", "en", "pt", "multilingue"]);
+        setLanguage("es");
+        setAvailablePers(["vendedor_proactivo", "amigable_cercano", "profesional_formal", "soporte_resolucion"]);
+        setPersonality("profesional_formal");
+      }
+
       if (t.id !== "custom") {
         setActiveTab("data");
       }
@@ -121,6 +178,14 @@ export default function NewProjectPage() {
     if ((selectedTemplate === 'inmobiliaria' || selectedTemplate === 'concesionaria') && visitDuration.trim()) {
       finalPrompt += `\n- Duración de la visita/turno: ${visitDuration.trim()} minutos.`;
     }
+
+    finalPrompt += `\n\nIDIOMA Y TONO DE RESPUESTA:`;
+    if (language === 'multilingue') {
+      finalPrompt += `\n- Idioma: Multilingüe (Detecta automáticamente el idioma del usuario y responde en el mismo idioma).`;
+    } else {
+      finalPrompt += `\n- Idioma Principal: ${LANG_LABELS[language] || language}. Si el usuario te habla en otro idioma, indícale amablemente que tu idioma principal es este.`;
+    }
+    finalPrompt += `\n- Personalidad: ${PERS_LABELS[personality] || personality}. Adapta tus respuestas, vocabulario y trato a este estilo en todo momento.`;
 
     startTransition(async () => {
       const result = await createProject(formData, finalPrompt, selectedCaps);
@@ -239,6 +304,36 @@ export default function NewProjectPage() {
                         />
                       </div>
                     )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border/50">
+                    <div className="space-y-2">
+                      <Label>Idioma del Bot</Label>
+                      <Select value={language} onValueChange={(val) => val && setLanguage(val)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona un idioma" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableLangs.map(l => (
+                            <SelectItem key={l} value={l}>{LANG_LABELS[l]}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Personalidad del Bot</Label>
+                      <Select value={personality} onValueChange={(val) => val && setPersonality(val)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona personalidad" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availablePers.map(p => (
+                            <SelectItem key={p} value={p}>{PERS_LABELS[p]}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-3 pt-4 border-t border-border/50">
