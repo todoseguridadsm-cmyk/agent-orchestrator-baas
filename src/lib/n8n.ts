@@ -558,18 +558,30 @@ export async function createN8nWorkflow(
 
 export async function deleteN8nWorkflowByPrefix(creds: N8nCredentials, prefix: string) {
   const baseUrl = creds.baseUrl.replace(/\/$/, "");
-  try {
-    const response = await fetch(`${baseUrl}/api/v1/workflows`, {
-      method: "GET",
-      headers: { "X-N8N-API-KEY": creds.apiKey }
-    });
-
-    if (!response.ok) {
-      return { success: false, error: "Error fetching workflows" };
-    }
-
-    const data = await response.json();
-    const workflows = data.data || [];
+    try {
+      let allWorkflows: any[] = [];
+      let nextCursor = null;
+      let url = `${baseUrl}/api/v1/workflows?limit=1000`;
+      
+      while (true) {
+        const res: any = await fetch(nextCursor ? `${url}&cursor=${nextCursor}` : url, {
+          method: "GET",
+          headers: { "X-N8N-API-KEY": creds.apiKey }
+        });
+        
+        if (!res.ok) break;
+        
+        const data = await res.json();
+        if (data.data) allWorkflows = [...allWorkflows, ...data.data];
+        
+        if (data.nextCursor) {
+          nextCursor = data.nextCursor;
+        } else {
+          break;
+        }
+      }
+      
+      const workflows = allWorkflows;
     
     // Buscar todos los workflows cuyo nombre empiece con la etiqueta generada, ej: "[A1B2C3]"
     const toDelete = workflows.filter((w: any) => w.name && w.name.includes(prefix));
