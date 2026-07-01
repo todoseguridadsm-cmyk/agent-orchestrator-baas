@@ -415,7 +415,7 @@ export async function createN8nWorkflow(
       id: "tool-pago",
       name: "Generar Pago",
       position: [700, 600]
-    });
+    } as any);
 
     workflowTemplate.nodes.push({
       parameters: {
@@ -427,7 +427,7 @@ export async function createN8nWorkflow(
       id: "tool-verificar-pago",
       name: "Verificar Pago",
       position: [900, 600]
-    });
+    } as any);
 
     workflowTemplate.nodes.push({
       parameters: {
@@ -439,9 +439,9 @@ export async function createN8nWorkflow(
       id: "tool-emitir-factura",
       name: "Emitir Factura",
       position: [1100, 600]
-    });
+    } as any);
 
-    workflowTemplate.connections["Gestor de Turnos"] = workflowTemplate.connections["Gestor de Turnos"] || { main: [[]] };
+    (workflowTemplate.connections as any)["Gestor de Turnos"] = (workflowTemplate.connections as any)["Gestor de Turnos"] || { main: [[]] };
   }
 
   // --- INYECCIÓN DINÁMICA DE HERRAMIENTAS (LEGO) ---

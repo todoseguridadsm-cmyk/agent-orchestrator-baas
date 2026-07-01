@@ -5,62 +5,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bot, Rocket, ArrowLeft, Package, Sparkles, Home, Utensils, ShoppingBag, Stethoscope, Briefcase, Wand2 } from "lucide-react";
+import { Bot, Rocket, ArrowLeft, Package, Sparkles, Home, Utensils, ShoppingBag, Stethoscope, Briefcase, Wand2, Armchair, Hotel, Tent, Music, Scissors, Dumbbell, Wrench, Scale, Dog, Shield, Settings, Activity, Pill } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { createProject, generateDynamicPrompt } from "../../actions";
 import { useRouter } from "next/navigation";
 
 const TEMPLATES = [
-  {
-    id: "inmobiliaria",
-    title: "Inmobiliaria",
-    icon: <Home className="w-6 h-6 text-blue-500" />,
-    description: "Agente experto en mostrar propiedades, filtrar clientes y agendar visitas.",
-    prompt: "Eres un asesor inmobiliario experto. Tu objetivo es pre-calificar a los clientes preguntando su presupuesto y zona de interés, y luego invitarlos a agendar una visita a la propiedad. Sé muy amable y profesional."
-  },
-  {
-    id: "restaurante",
-    title: "Restaurante / Delivery",
-    icon: <Utensils className="w-6 h-6 text-orange-500" />,
-    description: "Toma pedidos, envía el menú en PDF y responde horarios de atención.",
-    prompt: "Eres el asistente virtual de un restaurante. Debes saludar, ofrecer el menú del día y tomar el pedido del cliente detalladamente. Si preguntan por horarios, diles que abren de 12hs a 23hs."
-  },
-  {
-    id: "ecommerce",
-    title: "E-commerce",
-    icon: <ShoppingBag className="w-6 h-6 text-emerald-500" />,
-    description: "Vendedor 24/7. Responde dudas sobre envíos, talles y envia links de pago.",
-    prompt: "Eres un vendedor de una tienda online. Debes ayudar a los clientes a elegir sus productos, explicarles que los envíos tardan 48hs y facilitarles el link de pago si desean concretar la compra."
-  },
-  {
-    id: "clinica",
-    title: "Clínica Médica",
-    icon: <Stethoscope className="w-6 h-6 text-red-500" />,
-    description: "Recepcionista virtual que agenda turnos y deriva urgencias.",
-    prompt: "Eres la recepcionista de una clínica médica. Debes preguntar el DNI, obra social y especialidad que necesita el paciente para luego ofrecerle los turnos disponibles. Si es urgencia médica, diles que llamen al 911."
-  },
-  {
-    id: "agencia",
-    title: "Agencia de Marketing",
-    icon: <Briefcase className="w-6 h-6 text-purple-500" />,
-    description: "Cualifica leads B2B y agenda videollamadas comerciales.",
-    prompt: "Eres un SDR (Representante de Desarrollo de Ventas) para una agencia de marketing. Tu objetivo es entender el dolor del negocio del prospecto y agendar una llamada de 15 minutos por Zoom con un experto."
-  },
-  {
-    id: "concesionaria",
-    title: "Concesionaria Automotor",
-    icon: <Rocket className="w-6 h-6 text-sky-500" />,
-    description: "Asesor virtual de ventas. Perfila clientes y agenda visitas o Test Drives.",
-    prompt: "Eres un Asesor de Ventas Automotriz. Tu objetivo es perfilar al cliente, entusiasmarlo con los vehículos disponibles y lograr que agende un 'Test Drive' o visita presencial al local."
-  },
-  {
-    id: "custom",
-    title: "Crear desde cero",
-    icon: <Wand2 className="w-6 h-6 text-slate-500" />,
-    description: "Usa nuestra Inteligencia Artificial para generar un prompt totalmente a medida.",
-    prompt: ""
-  }
+  { id: "inmobiliaria", title: "Inmobiliaria", icon: <Home className="w-6 h-6 text-blue-500" />, description: "Agente experto en mostrar propiedades, filtrar clientes y agendar visitas.", prompt: "Eres un asesor inmobiliario experto. Tu objetivo es pre-calificar a los clientes y agendar visitas." },
+  { id: "concesionaria", title: "Concesionaria", icon: <Rocket className="w-6 h-6 text-sky-500" />, description: "Asesor virtual de ventas. Perfila clientes y agenda visitas o Test Drives.", prompt: "Eres un Asesor de Ventas Automotriz. Tu objetivo es perfilar al cliente y agendar un Test Drive." },
+  { id: "muebleria", title: "Mueblería", icon: <Armchair className="w-6 h-6 text-amber-600" />, description: "Vende muebles, asesora en medidas y cierra ventas online.", prompt: "Eres asesor en mueblería. Informa medidas, materiales y cierra la venta." },
+  { id: "clinica", title: "Clínica Médica", icon: <Stethoscope className="w-6 h-6 text-red-500" />, description: "Recepcionista que agenda turnos según especialidad y obra social.", prompt: "Eres recepcionista de una clínica. Agenda turnos y deriva urgencias." },
+  { id: "hoteleria", title: "Hotelería", icon: <Hotel className="w-6 h-6 text-indigo-500" />, description: "Asiste huéspedes, informa disponibilidad y toma reservas.", prompt: "Eres recepcionista de hotel. Informa disponibilidad y toma reservas." },
+  { id: "cabanas", title: "Cabañas / Turismo", icon: <Tent className="w-6 h-6 text-emerald-600" />, description: "Responde dudas, informa comodidades y cierra reservas temporales.", prompt: "Eres anfitrión de un complejo de cabañas. Informa disponibilidad y toma reservas." },
+  { id: "discoteca", title: "Discoteca / Boliche", icon: <Music className="w-6 h-6 text-purple-600" />, description: "Reserva mesas VIP, listas de cumpleaños y vende entradas.", prompt: "Eres RR.PP de una discoteca. Gestiona listas, mesas VIP y entradas." },
+  { id: "restaurante", title: "Restaurante / Delivery", icon: <Utensils className="w-6 h-6 text-orange-500" />, description: "Toma pedidos, envía menú y gestiona reservas de mesa.", prompt: "Eres camarero virtual. Toma pedidos de delivery o reservas de mesa." },
+  { id: "ecommerce", title: "E-commerce", icon: <ShoppingBag className="w-6 h-6 text-pink-500" />, description: "Vendedor 24/7. Responde talles, envíos y manda links de pago.", prompt: "Eres vendedor online. Ayuda con talles, envíos y manda links de pago." },
+  { id: "agencia", title: "Agencia Marketing", icon: <Briefcase className="w-6 h-6 text-slate-800" />, description: "Cualifica leads B2B y agenda videollamadas con expertos.", prompt: "Eres SDR de una agencia. Cualifica leads B2B y agenda videollamadas." },
+  { id: "peluqueria", title: "Peluquería / Barbería", icon: <Scissors className="w-6 h-6 text-zinc-500" />, description: "Agenda turnos rápidamente y asesora sobre servicios.", prompt: "Eres asistente de peluquería. Agenda turnos y asesora sobre precios." },
+  { id: "gimnasio", title: "Gimnasio", icon: <Dumbbell className="w-6 h-6 text-gray-700" />, description: "Informa planes, horarios de clases e inscribe alumnos.", prompt: "Eres recepcionista de gimnasio. Informa planes y motiva a inscribirse." },
+  { id: "taller", title: "Taller Mecánico", icon: <Wrench className="w-6 h-6 text-yellow-600" />, description: "Coordina turnos para revisión y presupuesta arreglos.", prompt: "Eres jefe de taller. Coordina turnos y presupuesta revisiones." },
+  { id: "abogados", title: "Estudio Abogados", icon: <Scale className="w-6 h-6 text-stone-600" />, description: "Recaba datos del caso y agenda asesorías iniciales.", prompt: "Eres asistente legal. Recaba datos confidenciales y agenda consultas." },
+  { id: "veterinaria", title: "Veterinaria", icon: <Dog className="w-6 h-6 text-orange-400" />, description: "Agenda turnos de atención y peluquería canina.", prompt: "Eres asistente veterinario. Agenda turnos clínicos o de peluquería." },
+  { id: "seguros", title: "Seguros", icon: <Shield className="w-6 h-6 text-blue-700" />, description: "Pide datos para cotizar pólizas y asiste en siniestros.", prompt: "Eres productor de seguros. Pide datos para cotizar pólizas." },
+  { id: "repuestos", title: "Repuestos", icon: <Settings className="w-6 h-6 text-gray-500" />, description: "Consulta compatibilidad de piezas y vende autopartes.", prompt: "Eres vendedor de repuestos. Consulta modelos y cierra ventas." },
+  { id: "estetica", title: "Estética y Spa", icon: <Activity className="w-6 h-6 text-rose-400" />, description: "Vende paquetes corporales y agenda turnos.", prompt: "Eres asesor de centro de estética. Vende paquetes y agenda sesiones." },
+  { id: "farmacia", title: "Farmacia", icon: <Pill className="w-6 h-6 text-teal-500" />, description: "Toma pedidos, pide recetas y asesora sobre marcas.", prompt: "Eres farmacéutico virtual. Toma pedidos y solicita recetas si corresponde." },
+  { id: "servicio_tecnico", title: "Servicio Técnico", icon: <Wrench className="w-6 h-6 text-cyan-600" />, description: "Pre-cotiza reparaciones y recibe equipos para revisión.", prompt: "Eres técnico de reparaciones. Pre-cotiza arreglos de PC/Celulares." },
+  { id: "custom", title: "Crear desde cero", icon: <Wand2 className="w-6 h-6 text-slate-500" />, description: "Usa Inteligencia Artificial para generar un prompt a medida.", prompt: "" }
 ];
 
 export default function NewProjectPage() {
