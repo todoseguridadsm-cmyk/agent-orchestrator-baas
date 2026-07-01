@@ -89,7 +89,8 @@ export default function NewProjectPage() {
     ventas: false,
     turnos: false,
     soporte: false,
-    cobros: false
+    cobros: false,
+    documentos: false
   });
 
   const [businessHours, setBusinessHours] = useState("");
@@ -168,6 +169,7 @@ export default function NewProjectPage() {
     if (capabilities.turnos) selectedCaps.push("turnos");
     if (capabilities.soporte) selectedCaps.push("soporte");
     if (capabilities.cobros) selectedCaps.push("cobros");
+    if (capabilities.documentos) selectedCaps.push("documentos");
     
     selectedCaps.forEach(cap => formData.append("capabilities", cap));
 
@@ -365,6 +367,13 @@ export default function NewProjectPage() {
                         <div>
                           <p className="font-medium">Cobros (SaaS)</p>
                           <p className="text-xs text-muted-foreground">Genera links de MercadoPago.</p>
+                        </div>
+                      </label>
+                      <label className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-accent/50 cursor-pointer">
+                        <input type="checkbox" className="mt-1" checked={capabilities.documentos} onChange={() => handleCapabilityChange("documentos")} />
+                        <div>
+                          <p className="font-medium">Enviar Docs</p>
+                          <p className="text-xs text-muted-foreground">PDFs por mail y WhatsApp.</p>
                         </div>
                       </label>
                     </div>

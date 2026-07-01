@@ -498,6 +498,21 @@ export async function createN8nWorkflow(
     aiAgentConnections.push({ node: "Crear Ticket Soporte", type: "ai_tool", index: 0 });
   }
 
+  if (capabilities.includes("documentos")) {
+    workflowTemplate.nodes.push({
+      parameters: {
+        description: "Envía Documentos o Comprobantes (Presupuestos, Facturas, Turnos o Reservas) al cliente por WhatsApp o Email. Pide el email primero si elige esa vía. Recibe un JSON: {\\\"type\\\": \\\"presupuesto\\\" | \\\"turno\\\" | \\\"factura\\\" | \\\"reserva\\\", \\\"channel\\\": \\\"whatsapp\\\" | \\\"email\\\", \\\"clientEmail\\\": \\\"...\\\", \\\"data\\\": { \\\"items\\\": [{\\\"description\\\": \\\"...\\\", \\\"quantity\\\": 1, \\\"price\\\": 100}], \\\"total\\\": 100, \\\"clientName\\\": \\\"...\\\", \\\"date\\\": \\\"...\\\", \\\"details\\\": \\\"...\\\" } }",
+        jsCode: `const appUrl = '${process.env.NEXT_PUBLIC_APP_URL || "https://interfast.vercel.app"}';\n\ntry {\n  const inputParams = typeof $input.all()[0].json.query === 'string' ? JSON.parse($input.all()[0].json.query) : $input.all()[0].json.query;\n  \n  const clientPhone = typeof $input.all()[0].json.numero_limpio !== 'undefined' ? $input.all()[0].json.numero_limpio : '';\n  \n  const result = await this.helpers.httpRequest({\n    method: 'POST',\n    url: \`\${appUrl}/api/documents/send\`,\n    headers: { 'Content-Type': 'application/json' },\n    body: {\n      projectId: '${projectId}',\n      type: inputParams.type,\n      channel: inputParams.channel,\n      clientPhone: clientPhone,\n      clientEmail: inputParams.clientEmail,\n      data: inputParams.data\n    }\n  });\n  \n  if (result.success) {\n    return "Documento enviado exitosamente por " + inputParams.channel + " al cliente.";\n  } else {\n    return "No se pudo enviar el documento: " + result.error;\n  }\n} catch (error) {\n  return "Error enviando documento: " + error.message;\n}`
+      },
+      type: "@n8n/n8n-nodes-langchain.toolCode",
+      typeVersion: 1.3,
+      position: [1568, 608],
+      id: "tool-documentos-" + Date.now(),
+      name: "Enviar Documento"
+    } as any);
+    aiAgentConnections.push({ node: "Enviar Documento", type: "ai_tool", index: 0 });
+  }
+
   // Conectar dinámicamente todas las herramientas inyectadas al AI Agent
   if (aiAgentConnections.length > 0) {
     aiAgentConnections.forEach(conn => {
