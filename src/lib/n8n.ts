@@ -561,6 +561,10 @@ export async function deleteN8nWorkflowByPrefix(creds: N8nCredentials, prefix: s
 
     for (const w of toDelete) {
       if (w.active) {
+        await fetch(`${baseUrl}/api/v1/workflows/${w.id}/deactivate`, {
+          method: "POST",
+          headers: { "X-N8N-API-KEY": creds.apiKey }
+        }).catch(() => {});
         await fetch(`${baseUrl}/api/v1/workflows/${w.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "X-N8N-API-KEY": creds.apiKey },

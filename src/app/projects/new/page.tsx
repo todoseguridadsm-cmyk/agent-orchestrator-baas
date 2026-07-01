@@ -82,6 +82,9 @@ export default function NewProjectPage() {
     cobros: false
   });
 
+  const [businessHours, setBusinessHours] = useState("");
+  const [visitDuration, setVisitDuration] = useState("");
+
   const handleTemplateSelect = (templateId: string) => {
     const t = TEMPLATES.find(x => x.id === templateId);
     if (t) {
@@ -139,8 +142,16 @@ export default function NewProjectPage() {
     
     selectedCaps.forEach(cap => formData.append("capabilities", cap));
 
+    let finalPrompt = systemPrompt;
+    if (businessHours.trim()) {
+      finalPrompt += `\n\nREGLAS DE HORARIOS:\n- Horarios de atención: ${businessHours.trim()}`;
+    }
+    if ((selectedTemplate === 'inmobiliaria' || selectedTemplate === 'concesionaria') && visitDuration.trim()) {
+      finalPrompt += `\n- Duración de la visita/turno: ${visitDuration.trim()} minutos.`;
+    }
+
     startTransition(async () => {
-      const result = await createProject(formData, systemPrompt, selectedCaps);
+      const result = await createProject(formData, finalPrompt, selectedCaps);
       if (result.success) {
         setMessage("¡Agente creado exitosamente en Supabase!");
         setTimeout(() => router.push("/projects"), 1000);
@@ -232,6 +243,30 @@ export default function NewProjectPage() {
                       value={industry}
                       onChange={e => setIndustry(e.target.value)}
                     />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="businessHours">Horarios de Atención</Label>
+                      <Input 
+                        id="businessHours" 
+                        placeholder="Ej: Lun a Vie 09:00 a 18:00" 
+                        value={businessHours}
+                        onChange={e => setBusinessHours(e.target.value)}
+                      />
+                    </div>
+                    {(selectedTemplate === 'inmobiliaria' || selectedTemplate === 'concesionaria') && (
+                      <div className="space-y-2">
+                        <Label htmlFor="visitDuration">Duración de visita (minutos)</Label>
+                        <Input 
+                          id="visitDuration" 
+                          type="number"
+                          placeholder="Ej: 60" 
+                          value={visitDuration}
+                          onChange={e => setVisitDuration(e.target.value)}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3 pt-4 border-t border-border/50">
