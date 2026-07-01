@@ -48,6 +48,13 @@ const TEMPLATES = [
     prompt: "Eres un SDR (Representante de Desarrollo de Ventas) para una agencia de marketing. Tu objetivo es entender el dolor del negocio del prospecto y agendar una llamada de 15 minutos por Zoom con un experto."
   },
   {
+    id: "concesionaria",
+    title: "Concesionaria Automotor",
+    icon: <Rocket className="w-6 h-6 text-sky-500" />,
+    description: "Asesor virtual de ventas. Perfila clientes y agenda visitas o Test Drives.",
+    prompt: "Eres un Asesor de Ventas Automotriz. Tu objetivo es perfilar al cliente, entusiasmarlo con los vehículos disponibles y lograr que agende un 'Test Drive' o visita presencial al local."
+  },
+  {
     id: "custom",
     title: "Crear desde cero",
     icon: <Wand2 className="w-6 h-6 text-slate-500" />,
